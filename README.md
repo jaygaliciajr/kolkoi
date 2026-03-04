@@ -32,3 +32,4 @@ With `npm run dev` running, visit [http://localhost:3000](http://localhost:3000)
 
 - If the query to `organizations` succeeds, the page shows `Connected ✅`.
 - If it fails, the page shows a clear error message.
+# kolkoi
