@@ -73,7 +73,7 @@ export function MarkMilestonePaidForm({
               id={`method-${milestone.id}`}
               name="method"
               defaultValue="GCash"
-              className="min-h-11 w-full rounded-xl border border-slate-300 bg-white/85 px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              className="ui-select"
             >
               <option value="GCash">GCash</option>
               <option value="Bank Transfer">Bank Transfer</option>
@@ -86,8 +86,9 @@ export function MarkMilestonePaidForm({
             id={`reference-${milestone.id}`}
             name="reference_no"
             label="Reference No"
-            helperText="Optional payment reference."
-            placeholder="Optional"
+            required
+            helperText="Required for payout audit logging."
+            placeholder="Enter transfer reference"
           />
 
           <Input

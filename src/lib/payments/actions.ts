@@ -22,7 +22,7 @@ function normalizePositiveAmount(value: FormDataEntryValue | null) {
   return Number(parsed.toFixed(2));
 }
 
-async function ensureFinanceOrOrgAdmin(input: { assignmentId: string; milestoneId: string }) {
+async function ensureManagerPaymentAccess(input: { assignmentId: string; milestoneId: string }) {
   const orgId = await getSelectedOrgId();
   if (!orgId) {
     return { error: "No organization selected." as const };
@@ -46,8 +46,8 @@ async function ensureFinanceOrOrgAdmin(input: { assignmentId: string; milestoneI
     (member && typeof member.role_type === "string" && member.role_type) ||
     null;
 
-  if (role !== "finance" && role !== "org_admin") {
-    return { error: "Only finance or org_admin can mark milestones as paid." as const };
+  if (role !== "campaign_manager" && role !== "org_admin" && role !== "manager") {
+    return { error: "Only managers can mark milestones as paid." as const };
   }
 
   const { data: assignment } = await supabase
@@ -98,11 +98,14 @@ export async function markMilestonePaidAction(
   if (!method) {
     return { error: "Payment method is required.", success: null };
   }
+  if (!referenceNo) {
+    return { error: "Reference number is required.", success: null };
+  }
   if (amount === null) {
     return { error: "Amount must be greater than 0.", success: null };
   }
 
-  const permissionCheck = await ensureFinanceOrOrgAdmin({ assignmentId, milestoneId });
+  const permissionCheck = await ensureManagerPaymentAccess({ assignmentId, milestoneId });
   if (hasPermissionError(permissionCheck)) {
     return { error: permissionCheck.error, success: null };
   }
@@ -150,6 +153,8 @@ export async function markMilestonePaidAction(
 
   revalidatePath("/admin/payments");
   revalidatePath(`/admin/payments/${assignmentId}`);
+  revalidatePath("/manager/payments");
+  revalidatePath(`/manager/payments/${assignmentId}`);
   revalidatePath("/influencer/payments");
   revalidatePath(`/influencer/payments/${assignmentId}`);
 

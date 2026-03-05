@@ -31,7 +31,7 @@ export default async function AdminReportsPage() {
           <select
             name="campaignId"
             required
-            className="min-w-64 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+            className="ui-select min-w-64"
             defaultValue=""
           >
             <option value="" disabled>

@@ -85,7 +85,7 @@ export default function NewCampaignPage() {
             id="status"
             name="status"
             defaultValue="draft"
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+            className="ui-select"
           >
             <option value="draft">draft</option>
             <option value="active">active</option>

@@ -96,7 +96,7 @@ function DeliverableEditor({
             <select
               name="platform"
               defaultValue={deliverable.platform ?? "instagram"}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+              className="ui-select"
             >
               <option value="facebook_page">facebook_page</option>
               <option value="instagram">instagram</option>
@@ -255,7 +255,7 @@ export function DeliverablesManager({
               <select
                 name="platform"
                 defaultValue="instagram"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+                className="ui-select"
               >
                 <option value="facebook_page">facebook_page</option>
                 <option value="instagram">instagram</option>

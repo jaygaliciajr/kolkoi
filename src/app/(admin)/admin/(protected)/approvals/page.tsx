@@ -91,7 +91,7 @@ export default async function AdminApprovalsPage({
               id="status"
               name="status"
               defaultValue={selectedStatus}
-              className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              className="ui-select mt-1"
             >
               <option value="submitted">Submitted</option>
               <option value="needs_revision">Needs Revision</option>

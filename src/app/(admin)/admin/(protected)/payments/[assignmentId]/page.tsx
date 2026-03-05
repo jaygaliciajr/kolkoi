@@ -72,7 +72,7 @@ export default async function AdminAssignmentPaymentsPage({ params }: { params: 
   }, 0);
 
   const role = await getMyRole();
-  const canMarkPaid = role === "finance" || role === "org_admin";
+  const canMarkPaid = role === "campaign_manager" || role === "org_admin" || role === "manager";
 
   return (
     <div className="space-y-4">

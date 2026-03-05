@@ -7,18 +7,20 @@ import {
   createOrganizationAction,
 } from "@/lib/org/actions";
 import { INITIAL_CREATE_ORG_STATE } from "@/lib/org/action-state";
+import { Button } from "@/components/ui/Button";
+import { focusRing, inputBase, transitionFast } from "@/lib/ui/tokens";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
-      disabled={pending}
-      className="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+      loading={pending}
+      className="w-full"
     >
       {pending ? "Creating..." : "Create Organization"}
-    </button>
+    </Button>
   );
 }
 
@@ -29,16 +31,16 @@ export default function CreateOrgPage() {
   );
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 p-4 sm:p-6">
-      <section className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Create Organization</h1>
-        <p className="mt-1 text-sm text-slate-600">
+    <main className="flex min-h-[calc(100dvh-9rem)] items-center justify-center p-4 sm:p-6">
+      <section className="w-full max-w-lg rounded-[var(--radius-2xl)] border border-border/70 bg-surface/80 p-5 text-text shadow-[var(--shadow-soft)] backdrop-blur-md sm:p-6">
+        <h1 className="text-2xl font-semibold text-text">Create Organization</h1>
+        <p className="mt-1 text-sm text-muted">
           Set up your organization to start using the admin portal.
         </p>
 
         <form action={formAction} className="mt-6 space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="name">
+            <label className="mb-1 block text-sm font-medium text-text" htmlFor="name">
               Organization Name
             </label>
             <input
@@ -47,21 +49,16 @@ export default function CreateOrgPage() {
               type="text"
               required
               maxLength={120}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+              className={`${inputBase} ${focusRing} ${transitionFast}`}
               placeholder="Acme Brand"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="tier">
+            <label className="mb-1 block text-sm font-medium text-text" htmlFor="tier">
               Tier
             </label>
-            <select
-              id="tier"
-              name="tier"
-              defaultValue="starter"
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
-            >
+            <select id="tier" name="tier" defaultValue="starter" className="ui-select">
               <option value="starter">starter</option>
               <option value="pro">pro</option>
               <option value="enterprise">enterprise</option>
@@ -69,7 +66,7 @@ export default function CreateOrgPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="logo">
+            <label className="mb-1 block text-sm font-medium text-text" htmlFor="logo">
               Logo Upload (optional)
             </label>
             <input
@@ -77,12 +74,12 @@ export default function CreateOrgPage() {
               name="logo"
               type="file"
               accept="image/*"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
+              className={`${inputBase} ${focusRing} ${transitionFast} file:mr-3 file:rounded-lg file:border-0 file:bg-surface-2 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-text hover:file:bg-surface-2/80`}
             />
           </div>
 
           {state.error ? (
-            <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">
+            <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-300">
               {state.error}
             </p>
           ) : null}

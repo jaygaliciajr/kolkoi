@@ -45,7 +45,7 @@ export function CardLink({ href, children, className }: { href: string; children
       )}
     >
       <div className="pr-7">{children}</div>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100 group-focus-visible:opacity-100 dark:text-slate-500">
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100 group-focus-visible:opacity-100">
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="m9 6 6 6-6 6" />
         </svg>
@@ -59,11 +59,11 @@ export function CardHeader({ children, className }: CardProps) {
 }
 
 export function CardTitle({ children, className }: CardProps) {
-  return <h2 className={cx("text-lg font-semibold text-slate-900 dark:text-slate-100", className)}>{children}</h2>;
+  return <h2 className={cx("text-lg font-semibold text-text", className)}>{children}</h2>;
 }
 
 export function CardDescription({ children, className }: CardProps) {
-  return <p className={cx("text-sm text-slate-500 dark:text-slate-400", className)}>{children}</p>;
+  return <p className={cx("text-sm text-muted", className)}>{children}</p>;
 }
 
 export function CardContent({ children, className }: CardProps) {

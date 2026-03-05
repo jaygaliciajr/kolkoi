@@ -80,7 +80,7 @@ export default async function InfluencersPage(props: { searchParams: SearchParam
           <select
             name="tag"
             defaultValue={tag}
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+            className="ui-select"
           >
             <option value="">All tags</option>
             {allTags.map((item) => (

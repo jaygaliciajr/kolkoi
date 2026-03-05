@@ -7,18 +7,20 @@ import {
   redeemInfluencerLinkCodeAction,
 } from "@/lib/influencers/actions";
 import { INITIAL_INFLUENCER_ACTION_STATE } from "@/lib/influencers/action-state";
+import { Button } from "@/components/ui/Button";
+import { focusRing, inputBase, transitionFast } from "@/lib/ui/tokens";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
-      disabled={pending}
-      className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+      loading={pending}
+      size="md"
     >
       {pending ? "Linking..." : "Link My Record"}
-    </button>
+    </Button>
   );
 }
 
@@ -31,22 +33,24 @@ export function LinkInfluencerForm() {
   return (
     <form action={formAction} className="space-y-3">
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="code">
+        <label className="mb-1 block text-sm font-medium text-text" htmlFor="code">
           Link Code
         </label>
         <input
           id="code"
           name="code"
-          placeholder="Paste code from admin"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm uppercase outline-none ring-slate-300 focus:ring"
+          placeholder="Paste code from manager/admin portal"
+          className={`${inputBase} ${focusRing} ${transitionFast} uppercase`}
         />
       </div>
 
       {state.error ? (
-        <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>
+        <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-300">
+          {state.error}
+        </p>
       ) : null}
       {state.success ? (
-        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300">
           {state.success}
         </p>
       ) : null}

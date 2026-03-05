@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import { ORG_COOKIE_NAME } from "@/lib/org/constants";
 import { getMyOrgs } from "@/lib/org/getMyOrgs";
+import { getAppRole } from "@/lib/rbac/getAppRole";
 import { getMyRole } from "@/lib/rbac/getMyRole";
 
 const ADMIN_ALLOWED_ROLES = new Set(["org_admin", "campaign_manager", "finance"]);
@@ -16,6 +17,11 @@ export default async function AdminProtectedLayout({
   const user = await getSessionUser();
   if (!user) {
     redirect("/login");
+  }
+
+  const appRole = await getAppRole();
+  if (appRole !== "manager") {
+    redirect("/unauthorized");
   }
 
   const orgs = await getMyOrgs();

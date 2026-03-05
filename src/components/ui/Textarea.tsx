@@ -41,9 +41,9 @@ export function Textarea({
 
   return (
     <label className="block space-y-1.5">
-      <span className="flex items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-200">
+      <span className="flex items-center gap-2 text-sm font-medium text-text">
         {label}
-        {required ? <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">Required</span> : null}
+        {required ? <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] uppercase text-muted">Required</span> : null}
       </span>
 
       <textarea
@@ -56,7 +56,7 @@ export function Textarea({
           "min-h-24",
           resolvedError && "border-rose-400 focus:ring-rose-500/30",
           !resolvedError && success && "border-emerald-400 focus:ring-emerald-500/30",
-          !resolvedError && !success && "border-slate-300 dark:border-slate-700",
+          !resolvedError && !success && "border-border",
           className,
         )}
         onBlur={(event) => {
@@ -87,7 +87,7 @@ export function Textarea({
         {resolvedError ? (
           <p className="text-xs text-rose-600 transition-all duration-200 dark:text-rose-300">{resolvedError}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
+          <p className="text-xs text-muted">{helperText}</p>
         ) : null}
       </div>
     </label>

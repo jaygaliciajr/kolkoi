@@ -169,7 +169,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
         <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label htmlFor="status" className="text-sm font-medium text-slate-800 dark:text-slate-200">Milestone status</label>
-            <select id="status" name="status" defaultValue={statusFilter} className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+            <select id="status" name="status" defaultValue={statusFilter} className="ui-select mt-1">
               <option value="all">All</option>
               <option value="ready">Ready to Pay</option>
               <option value="paid">Paid</option>
@@ -179,7 +179,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
 
           <div>
             <label htmlFor="campaign" className="text-sm font-medium text-slate-800 dark:text-slate-200">Campaign</label>
-            <select id="campaign" name="campaign" defaultValue={campaignFilter} className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+            <select id="campaign" name="campaign" defaultValue={campaignFilter} className="ui-select mt-1">
               <option value="">All campaigns</option>
               {(campaigns ?? []).map((campaign) => (
                 <option key={campaign.id as string} value={campaign.id as string}>{campaign.title as string}</option>
@@ -189,7 +189,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
 
           <div>
             <label htmlFor="influencer" className="text-sm font-medium text-slate-800 dark:text-slate-200">Influencer</label>
-            <select id="influencer" name="influencer" defaultValue={influencerFilter} className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+            <select id="influencer" name="influencer" defaultValue={influencerFilter} className="ui-select mt-1">
               <option value="">All influencers</option>
               {(influencers ?? []).map((influencer) => (
                 <option key={influencer.id as string} value={influencer.id as string}>{influencer.full_name as string}</option>
@@ -199,7 +199,13 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
 
           <div>
             <label htmlFor="q" className="text-sm font-medium text-slate-800 dark:text-slate-200">Search</label>
-            <input id="q" name="q" defaultValue={query} placeholder="Influencer or campaign" className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+            <input
+              id="q"
+              name="q"
+              defaultValue={query}
+              placeholder="Influencer or campaign"
+              className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+            />
           </div>
 
           <div className="sm:col-span-2 lg:col-span-4">

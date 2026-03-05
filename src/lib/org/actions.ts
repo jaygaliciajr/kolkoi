@@ -107,7 +107,9 @@ export async function createOrganizationAction(
 
   if (orgError || !organization) {
     return {
-      error: "Could not create organization. Please try again.",
+      error: orgError?.message
+        ? `Could not create organization: ${orgError.message}`
+        : "Could not create organization. Please try again.",
     };
   }
 
@@ -164,17 +166,23 @@ export async function createOrganizationAction(
   ];
 
   let memberInsertSucceeded = false;
+  let memberInsertErrorMessage: string | null = null;
   for (const payload of membershipPayloads) {
     const { error } = await supabase.from("org_members").insert(payload);
     if (!error) {
       memberInsertSucceeded = true;
       break;
     }
+    if (!memberInsertErrorMessage) {
+      memberInsertErrorMessage = error.message;
+    }
   }
 
   if (!memberInsertSucceeded) {
     return {
-      error: "Organization created, but membership could not be created.",
+      error: memberInsertErrorMessage
+        ? `Organization created, but membership could not be created: ${memberInsertErrorMessage}`
+        : "Organization created, but membership could not be created.",
     };
   }
 

@@ -71,7 +71,7 @@ export default async function CampaignsPage(props: { searchParams: SearchParams 
           <select
             name="status"
             defaultValue={status}
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+            className="ui-select"
           >
             {FILTER_STATUSES.map((value) => (
               <option key={value} value={value}>

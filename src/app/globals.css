@@ -1,39 +1,162 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  color-scheme: light;
+  --bg: 248 250 252;
+  --surface: 255 255 255;
+  --surface-2: 241 245 249;
+  --border: 226 232 240;
+  --text: 15 23 42;
+  --muted: 100 116 139;
+  --primary: 79 70 229;
+  --success: 16 185 129;
+  --warning: 245 158 11;
+  --danger: 244 63 94;
+  --info: 14 165 233;
+
+  --chart-grid: 226 232 240;
+  --chart-axis: 100 116 139;
+  --chart-tooltip-bg: 255 255 255;
+  --chart-tooltip-border: 226 232 240;
+
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  --shadow-soft: 0 16px 42px -24px rgba(15, 23, 42, 0.28);
+  --shadow-elevated: 0 20px 56px -26px rgba(15, 23, 42, 0.34);
+
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 280ms;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #e2e8f0;
+  color-scheme: dark;
+  --bg: 2 6 23;
+  --surface: 15 23 42;
+  --surface-2: 15 23 42;
+  --border: 51 65 85;
+  --text: 226 232 240;
+  --muted: 148 163 184;
+  --primary: 129 140 248;
+  --success: 52 211 153;
+  --warning: 251 191 36;
+  --danger: 251 113 133;
+  --info: 56 189 248;
+
+  --chart-grid: 51 65 85;
+  --chart-axis: 148 163 184;
+  --chart-tooltip-bg: 15 23 42;
+  --chart-tooltip-border: 51 65 85;
+
+  --shadow-soft: 0 10px 32px -18px rgba(2, 6, 23, 0.7);
+  --shadow-elevated: 0 16px 48px -20px rgba(2, 6, 23, 0.78);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: rgb(var(--bg));
+  --color-foreground: rgb(var(--text));
+  --color-bg: rgb(var(--bg));
+  --color-surface: rgb(var(--surface));
+  --color-surface-2: rgb(var(--surface-2));
+  --color-border: rgb(var(--border));
+  --color-text: rgb(var(--text));
+  --color-muted: rgb(var(--muted));
+  --color-primary: rgb(var(--primary));
+  --color-success: rgb(var(--success));
+  --color-warning: rgb(var(--warning));
+  --color-danger: rgb(var(--danger));
+  --color-info: rgb(var(--info));
+  --color-chart-grid: rgb(var(--chart-grid));
+  --color-chart-axis: rgb(var(--chart-axis));
+  --color-chart-tooltip-bg: rgb(var(--chart-tooltip-bg));
+  --color-chart-tooltip-border: rgb(var(--chart-tooltip-border));
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 * {
-  border-color: rgb(226 232 240 / 1);
+  border-color: rgb(var(--border) / 0.75);
 }
 
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 35%, #f1f5f9 100%);
-  color: var(--foreground);
+  background:
+    radial-gradient(1200px 560px at 4% -6%, rgb(var(--primary) / 0.1), transparent 55%),
+    radial-gradient(980px 460px at 98% 2%, rgb(var(--info) / 0.08), transparent 58%),
+    linear-gradient(150deg, rgb(var(--bg)) 0%, rgb(var(--surface-2)) 52%, rgb(var(--bg)) 100%);
+  color: rgb(var(--text));
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 .dark body {
-  background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #111827 100%);
+  background:
+    radial-gradient(1200px 560px at 4% -6%, rgb(var(--primary) / 0.22), transparent 55%),
+    radial-gradient(980px 460px at 98% 2%, rgb(var(--info) / 0.18), transparent 58%),
+    linear-gradient(150deg, rgb(var(--bg)) 0%, rgb(var(--surface-2)) 52%, rgb(var(--bg)) 100%);
 }
 
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
   }
+}
+
+::selection {
+  background: rgb(var(--primary) / 0.18);
+  color: rgb(var(--text));
+}
+
+.ui-select {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--radius-lg);
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text));
+  padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard);
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgb(var(--muted)) 50%),
+    linear-gradient(135deg, rgb(var(--muted)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.1rem) calc(50% - 0.15rem),
+    calc(100% - 0.8rem) calc(50% - 0.15rem);
+  background-size: 0.36rem 0.36rem, 0.36rem 0.36rem;
+  background-repeat: no-repeat;
+}
+
+.ui-select:focus {
+  border-color: rgb(var(--primary) / 0.6);
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 0.35);
+}
+
+.ui-select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ui-select option {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text));
 }

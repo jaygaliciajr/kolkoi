@@ -1,22 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { getSessionUser } from "@/lib/auth/getSessionUser";
-import { createClient } from "@/lib/supabase/server";
+import { getAppRole } from "@/lib/rbac/getAppRole";
 
 export async function isSuperAdmin(): Promise<boolean> {
-  const user = await getSessionUser();
-  if (!user) {
-    return false;
-  }
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("is_super_admin");
-
-  if (error) {
-    return false;
-  }
-
-  return data === true;
+  return (await getAppRole()) === "superadmin";
 }
 
 export async function requireSuperAdmin() {
@@ -27,7 +15,7 @@ export async function requireSuperAdmin() {
 
   const allowed = await isSuperAdmin();
   if (!allowed) {
-    redirect("/admin/dashboard");
+    redirect("/manager/dashboard");
   }
 
   return user;

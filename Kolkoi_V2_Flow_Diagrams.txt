@@ -1,0 +1,109 @@
+KOLKOI V2 FLOW DIAGRAMS
+Generated: 2026-03-05
+
+============================================================
+DIAGRAM 1: ROLE LIFECYCLE FLOW
+============================================================
+
+[Start: Fresh User Login]
+            |
+            v
+         [Role?]
+      /    |    |    \
+     v     v    v     v
+[Super] [Client] [Mgr] [Influencer]
+
+Superadmin path:
+  -> Open /super-admin/dashboard
+  -> Monitor orgs/users/activity (read-only)
+
+Client path:
+  -> Create/Select Client + Brand
+  -> Create Campaign Brief
+  -> Submit for Manager Planning
+  -> Review anonymized recommendations
+  -> Approve campaign for lock
+
+Manager path:
+  -> If no org: /manager/create-org
+  -> Build campaign + deliverables
+  -> Send invites to influencers
+  -> Review drafts (approve/revise)
+  -> Review proofs (verify/reject)
+  -> Mark milestones paid (ref no. required)
+  -> Manually lock campaign (after client approval)
+
+Influencer path:
+  -> Register/Login
+  -> Link influencer record via link code
+  -> Inbox: Accept/Decline invite (7-day expiry)
+  -> Submit draft content
+  -> Revise if requested
+  -> Submit proof (screenshot required; URL optional)
+  -> Track payment milestones
+
+Lock + Change Request:
+  Client approve + Manager lock -> [Locked Campaign]
+  If change needed -> Client creates Change Request
+  Manager decision:
+    - Reject -> Closed: Rejected
+    - Approve -> New Campaign Version + cancel old invites + re-invite required
+
+============================================================
+DIAGRAM 2: FIRST-TIME SETUP CHECKLIST FLOW
+============================================================
+
+1) Environment Setup
+  -> Add .env.local
+     - NEXT_PUBLIC_SUPABASE_URL
+     - NEXT_PUBLIC_SUPABASE_ANON_KEY
+     - SUPABASE_SERVICE_ROLE_KEY
+
+2) Database Setup
+  -> Run migrations (supabase db push)
+  -> Apply RLS hotfix if needed
+  -> Seed sample data (optional)
+
+3) Bootstrap Accounts/Roles
+  -> Ensure user_profiles role values
+  -> Insert superadmin in platform_admins
+  -> Prepare test logins for client/manager/influencer
+
+4) App Startup
+  -> npm install
+  -> npm run dev
+  -> Open /login
+
+5) First-Time Flow Validation
+  Manager:
+    -> /manager/create-org
+    -> Create org successfully
+    -> Create campaign + deliverables
+    -> Invite influencer
+
+6) Influencer Validation
+  -> Link code
+  -> Accept invite
+  -> Submit draft
+  -> Submit proof
+
+7) Manager Ops Validation
+  -> Approve/revise draft
+  -> Verify/reject proof
+  -> Mark payment paid (with reference no.)
+
+8) Client Validation
+  -> View anonymized recommendations
+  -> Approve campaign
+  -> Manager locks campaign
+  -> Change request -> new version flow
+
+9) Superadmin Validation
+  -> /super-admin/dashboard
+  -> Verify read-only monitoring + CSV exports
+
+10) Go-Live Checklist
+  -> Set Vercel env vars (Prod/Preview)
+  -> Confirm Supabase URL/keys
+  -> Smoke test deployed URL
+

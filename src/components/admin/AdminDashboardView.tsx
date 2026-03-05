@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Area,
   AreaChart,
@@ -17,10 +18,12 @@ import {
   YAxis,
 } from "recharts";
 
-import { ChartCard } from "@/components/ui/ChartCard";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { ChartCard } from "@/components/ui/ChartCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { NextActionPanel } from "@/components/ui/NextActionPanel";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
 type DashboardKpis = {
@@ -59,8 +62,21 @@ type AdminDashboardViewProps = {
   recentActivity: ActivityItem[];
 };
 
+const chartGrid = "rgb(var(--chart-grid))";
+const chartAxis = "rgb(var(--chart-axis))";
+const tooltipStyle = {
+  backgroundColor: "rgb(var(--chart-tooltip-bg))",
+  border: "1px solid rgb(var(--chart-tooltip-border))",
+  borderRadius: "12px",
+  color: "rgb(var(--text))",
+};
+
 function toCurrency(value: number) {
   return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function hasAnyValue(values: number[]) {
+  return values.some((value) => value > 0);
 }
 
 function KpiCard({
@@ -79,7 +95,7 @@ function KpiCard({
   return (
     <Card className="p-5">
       <CardDescription>{label}</CardDescription>
-      <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+      <p className="mt-2 text-3xl font-semibold tracking-tight text-text">
         <AnimatedNumber
           value={value}
           format={format}
@@ -87,7 +103,7 @@ function KpiCard({
           className="tabular-nums"
         />
       </p>
-      {hint ? <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
     </Card>
   );
 }
@@ -99,11 +115,11 @@ function MiniSparkline({ data }: { data: Array<{ value: number; key: string }> }
         <AreaChart data={data}>
           <defs>
             <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="rgb(var(--primary))" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="rgb(var(--primary))" stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <Area type="monotone" dataKey="value" stroke="#6366f1" fill="url(#spark)" strokeWidth={2} />
+          <Area type="monotone" dataKey="value" stroke="rgb(var(--primary))" fill="url(#spark)" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -119,14 +135,41 @@ export function AdminDashboardView({
   influencerActivity,
   recentActivity,
 }: AdminDashboardViewProps) {
+  const hasCampaignPerformance = hasAnyValue(
+    campaignPerformance.flatMap((item) => [item.active, item.completed]),
+  );
+  const hasDraftFunnel = hasAnyValue(draftFunnel.map((item) => item.count));
+  const hasProofStatus = hasAnyValue(
+    proofStatus.flatMap((item) => [item.pending, item.needsUrl, item.verified, item.rejected]),
+  );
+  const hasPaymentTrend = hasAnyValue(paymentTrend.flatMap((item) => [item.ready, item.paid, item.trend]));
+
   return (
     <div className="space-y-6">
-      <section className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Command Center</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Real-time campaign, approval, proof, and payout operations.
-        </p>
-      </section>
+      <PageHeader
+        title="Operations Dashboard"
+        subtitle="A unified view of campaign health, review queues, proof verification, and payout readiness."
+        breadcrumbs={[
+          { label: "Admin", href: "/admin/dashboard" },
+          { label: "Dashboard" },
+        ]}
+        actions={
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/campaigns/new"
+              className="rounded-[var(--radius-lg)] bg-primary px-3 py-2 text-sm font-medium text-white transition-[opacity] duration-[var(--motion-fast)] hover:opacity-95"
+            >
+              Create Campaign
+            </Link>
+            <Link
+              href="/admin/reports"
+              className="rounded-[var(--radius-lg)] border border-border bg-surface px-3 py-2 text-sm font-medium text-text transition-[background-color] duration-[var(--motion-fast)] hover:bg-surface-2"
+            >
+              Open Reports
+            </Link>
+          </div>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard label="Active Campaigns" value={kpis.activeCampaigns} />
@@ -144,120 +187,163 @@ export function AdminDashboardView({
 
       <NextActionPanel
         items={[
-          ...(kpis.pendingApprovals > 0 ? [{ label: `Review approvals (${kpis.pendingApprovals})`, href: "/admin/approvals" }] : []),
-          ...(kpis.proofsPending > 0 ? [{ label: `Verify proofs (${kpis.proofsPending})`, href: "/admin/proofs" }] : []),
-          ...(kpis.readyCount > 0 ? [{ label: `Pay milestones (${kpis.readyCount})`, href: "/admin/payments?status=ready" }] : []),
+          ...(kpis.pendingApprovals > 0
+            ? [{ label: `Review approvals (${kpis.pendingApprovals})`, href: "/admin/approvals" }]
+            : []),
+          ...(kpis.proofsPending > 0
+            ? [{ label: `Verify proofs (${kpis.proofsPending})`, href: "/admin/proofs" }]
+            : []),
+          ...(kpis.readyCount > 0
+            ? [{ label: `Pay milestones (${kpis.readyCount})`, href: "/admin/payments?status=ready" }]
+            : []),
         ]}
       />
 
       <section className="grid gap-4 lg:grid-cols-2">
         <ChartCard title="Campaign Performance Overview" subtitle="Active vs completed campaigns over time.">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={campaignPerformance}>
-                <defs>
-                  <linearGradient id="activeFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0.03} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Area dataKey="active" stroke="#4f46e5" fill="url(#activeFill)" strokeWidth={2} />
-                <Line type="monotone" dataKey="completed" stroke="#10b981" strokeWidth={2} dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {hasCampaignPerformance ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={campaignPerformance}>
+                  <defs>
+                    <linearGradient id="activeFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgb(var(--primary))" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="rgb(var(--primary))" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} />
+                  <XAxis dataKey="label" tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <YAxis tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Area dataKey="active" stroke="rgb(var(--primary))" fill="url(#activeFill)" strokeWidth={2} />
+                  <Line type="monotone" dataKey="completed" stroke="rgb(var(--success))" strokeWidth={2} dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="No campaign trends yet"
+              description="Once campaigns start moving, this overview will display momentum across active and completed work."
+              ctaLabel="Create Campaign"
+              ctaHref="/admin/campaigns/new"
+            />
+          )}
         </ChartCard>
 
         <ChartCard title="Draft Approval Funnel" subtitle="Submission health by current state.">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={draftFunnel}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="status" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-                  {draftFunnel.map((row) => (
-                    <Cell
-                      key={row.status}
-                      fill={
-                        row.status === "approved"
-                          ? "#10b981"
-                          : row.status === "needs_revision"
-                            ? "#f59e0b"
-                            : "#3b82f6"
-                      }
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {hasDraftFunnel ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={draftFunnel}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} />
+                  <XAxis dataKey="status" tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <YAxis tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {draftFunnel.map((row) => (
+                      <Cell
+                        key={row.status}
+                        fill={
+                          row.status === "approved"
+                            ? "rgb(var(--success))"
+                            : row.status === "needs_revision"
+                              ? "rgb(var(--warning))"
+                              : "rgb(var(--info))"
+                        }
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="No draft submissions yet"
+              description="The funnel will populate when influencers submit content for approval."
+            />
+          )}
         </ChartCard>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-1">
         <ChartCard title="Proof Verification Status" subtitle="Pending and quality compliance status.">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={proofStatus}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="status" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="pending" stackId="proof" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="needsUrl" stackId="proof" fill="#f59e0b" />
-                <Bar dataKey="verified" stackId="proof" fill="#10b981" />
-                <Bar dataKey="rejected" stackId="proof" fill="#f43f5e" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {hasProofStatus ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={proofStatus}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} />
+                  <XAxis dataKey="status" tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <YAxis tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Bar dataKey="pending" stackId="proof" fill="rgb(var(--info))" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="needsUrl" stackId="proof" fill="rgb(var(--warning))" />
+                  <Bar dataKey="verified" stackId="proof" fill="rgb(var(--success))" />
+                  <Bar dataKey="rejected" stackId="proof" fill="rgb(var(--danger))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="No proofs in queue"
+              description="Verified and pending proof statuses will appear as soon as proof submissions are posted."
+            />
+          )}
         </ChartCard>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
-        <ChartCard title="Payment Overview" subtitle="Milestone readiness and paid trend.">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={paymentTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="ready" fill="#0ea5e9" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="paid" fill="#10b981" radius={[6, 6, 0, 0]} />
-                <Line type="monotone" dataKey="trend" stroke="#4f46e5" strokeWidth={2} dot={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+        <ChartCard title="Payment Overview" subtitle="Milestone readiness and payout trend.">
+          {hasPaymentTrend ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={paymentTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} />
+                  <XAxis dataKey="label" tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <YAxis tick={{ fontSize: 12, fill: chartAxis }} axisLine={{ stroke: chartGrid }} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Bar dataKey="ready" fill="rgb(var(--info))" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="paid" fill="rgb(var(--success))" radius={[6, 6, 0, 0]} />
+                  <Line type="monotone" dataKey="trend" stroke="rgb(var(--primary))" strokeWidth={2} dot={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="No payment movement yet"
+              description="Ready and paid milestones will trend here once approvals and verifications complete."
+            />
+          )}
         </ChartCard>
 
-        <ChartCard title="Submission Mix" subtitle="Quick status spread of latest draft states.">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={draftFunnel} dataKey="count" nameKey="status" innerRadius={52} outerRadius={84} paddingAngle={3}>
-                  {draftFunnel.map((row) => (
-                    <Cell
-                      key={row.status}
-                      fill={
-                        row.status === "approved"
-                          ? "#10b981"
-                          : row.status === "needs_revision"
-                            ? "#f59e0b"
-                            : "#3b82f6"
-                      }
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <ChartCard title="Submission Mix" subtitle="Distribution of latest draft states.">
+          {hasDraftFunnel ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={draftFunnel} dataKey="count" nameKey="status" innerRadius={52} outerRadius={84} paddingAngle={3}>
+                    {draftFunnel.map((row) => (
+                      <Cell
+                        key={row.status}
+                        fill={
+                          row.status === "approved"
+                            ? "rgb(var(--success))"
+                            : row.status === "needs_revision"
+                              ? "rgb(var(--warning))"
+                              : "rgb(var(--info))"
+                        }
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={tooltipStyle} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="No mix to display"
+              description="This chart appears after the first submission batch enters your queue."
+            />
+          )}
         </ChartCard>
       </section>
 
@@ -270,7 +356,7 @@ export function AdminDashboardView({
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                   <th className="px-3 py-2">Influencer</th>
                   <th className="px-3 py-2">Campaigns</th>
                   <th className="px-3 py-2">Verified</th>
@@ -281,20 +367,25 @@ export function AdminDashboardView({
               <tbody>
                 {influencerActivity.length === 0 ? (
                   <tr>
-                    <td className="px-3 py-6 text-slate-500 dark:text-slate-400" colSpan={5}>
-                      No influencer activity yet.
+                    <td className="px-3 py-6" colSpan={5}>
+                      <EmptyState
+                        title="No influencer activity yet"
+                        description="Invite influencers to campaigns to begin tracking participation performance."
+                        ctaLabel="Open Influencers"
+                        ctaHref="/admin/influencers"
+                      />
                     </td>
                   </tr>
                 ) : (
                   influencerActivity.map((row) => (
                     <tr
                       key={row.id}
-                      className="border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
+                      className="border-b border-border/60 transition-colors duration-[var(--motion-fast)] hover:bg-surface-2/60"
                     >
-                      <td className="px-3 py-3 font-medium text-slate-900 dark:text-slate-100">{row.name}</td>
-                      <td className="px-3 py-3 text-slate-700 dark:text-slate-300">{row.campaignsJoined}</td>
-                      <td className="px-3 py-3 text-slate-700 dark:text-slate-300">{row.verifiedPosts}</td>
-                      <td className="px-3 py-3 text-slate-700 dark:text-slate-300">PHP {toCurrency(row.payout)}</td>
+                      <td className="px-3 py-3 font-medium text-text">{row.name}</td>
+                      <td className="px-3 py-3 text-text/90">{row.campaignsJoined}</td>
+                      <td className="px-3 py-3 text-text/90">{row.verifiedPosts}</td>
+                      <td className="px-3 py-3 text-text/90">PHP {toCurrency(row.payout)}</td>
                       <td className="px-3 py-3">
                         <MiniSparkline data={row.trend} />
                       </td>
@@ -313,21 +404,16 @@ export function AdminDashboardView({
           </CardHeader>
           <CardContent className="space-y-2">
             {recentActivity.length === 0 ? (
-              <p className="text-sm text-slate-500 dark:text-slate-400">No recent activity yet.</p>
+              <EmptyState title="No recent activity" description="New submissions, proofs, and payments will appear here." />
             ) : (
               recentActivity.map((item) => (
-                <article
-                  key={item.id}
-                  className="rounded-xl border border-slate-200 bg-white/80 p-3 dark:border-slate-700 dark:bg-slate-900/80"
-                >
+                <article key={item.id} className="rounded-[var(--radius-xl)] border border-border bg-surface p-3">
                   <div className="flex items-center justify-between gap-3">
                     <StatusBadge status={item.type.toLowerCase()} />
-                    <time className="text-xs text-slate-500 dark:text-slate-400">
-                      {new Date(item.at).toLocaleString()}
-                    </time>
+                    <time className="text-xs text-muted">{new Date(item.at).toLocaleString()}</time>
                   </div>
-                  <p className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">{item.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{item.subtitle}</p>
+                  <p className="mt-2 text-sm font-medium text-text">{item.title}</p>
+                  <p className="text-xs text-muted">{item.subtitle}</p>
                 </article>
               ))
             )}

@@ -80,7 +80,7 @@ export function CampaignInviteManager({
         <select
           value={tag}
           onChange={(event) => setTag(event.target.value)}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-300 focus:ring"
+          className="ui-select"
         >
           <option value="">All tags</option>
           {allTags.map((item) => (
